@@ -9,24 +9,42 @@ BP (Boosting Pool) is a contract for LP recruitment and reward programs, offerin
   - Participants receive reward points exchangeable for CHRMA tokens.
   - CHRMA token exchange is an off-chain operation beyond the scope of this document.
 
-- Deposits to the pool and received tokens are transferable.
-  - However, reward aggregation is an off-chain operation.
+- Deposits to the pool and received tokens are __non-transferable__.
+  - Reward aggregation is an off-chain operation.
   - Aggregation is based on the wallet used for the deposit.
   - When the pool is 'locked,' reward aggregation is calculated using a quadratic function.
 
 - Target Amount:
-  - Maximum amount: Any excess beyond the target is returned.
+  - Maximum amount: Any excess beyond the target is not allowed.
   - Minimum amount: If the minimum is not exceeded, boosting is canceled, and funds can be refunded to users.
+
+
+## LP Boosting and Lockup Period Activation
+
+During the warm-up period, if the maximum amount is deposited, the warm-up period concludes, and LP boosting is initiated. Following this, the lockup period begins.
+
+### Description
+
+1. **Warm-Up Period:**
+   - Users can deposit funds during the warm-up period.
+   - If the maximum allowable amount is reached, the warm-up period concludes.
+
+2. **LP Boosting Initiation:**
+   - Upon reaching the maximum deposit amount during the warm-up period, LP boosting is triggered.
+
+3. **Lockup Period Activation:**
+   - Following the initiation of LP boosting, the lockup period begins.
+
 
 ## Timeline
 - startof liquidity warmup period
-  - state: `warmup`
-- endOf liquidity warmup period
+  - state: `warmup`, Users are able to call `deposit`  
+- end of liquidity warmup period
   - = startOf liquidity boosting period
-  - state: `canceled`
+  - state: `canceled` if warmup period ends without reaching the minimum target amount. Users are able to call `refund`  
   - state: `locked`
-- endOf liquidity boosting period
-  - state: `unlocked`
+- end of liquidity boosting period
+  - state: `unlocked`, Users are able to call `claim`
 
 ```mermaid
 
@@ -34,7 +52,6 @@ stateDiagram-v2
     [*] --> Warmup: start of warmup
     
     Warmup --> Canceled 
-    Warmup --> Canceled
     Warmup --> Locked
     Locked --> Unlocked
     Unlocked --> [*]
@@ -69,13 +86,11 @@ sequenceDiagram
 
 ```
 
-
 ## Warmup period
 - Deposit is allowed and can be done multiple times.
 - Withdrawal is not permitted.
 - Maximum Cap:
   - Additional deposits are not allowed if the total max cap is exceeded.
-  - Deposits exceeding the last cap are returned as additional funds.
 
 
 ## canceled
@@ -88,7 +103,7 @@ sequenceDiagram
 ## locked
 - In case the minimum cap is exceeded:
   - Provide liquidity to the pool using `addLiquidity`.
-    - Transaction execution is handled by the Chromatic development team or Automation via Gelato can be considered.
+    - Transaction execution is handled by the Chromatic development team or Automation can be considered.
 - The boosting pool holds CLP during lock-up period.
 
 ## unlock

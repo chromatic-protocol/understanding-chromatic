@@ -43,7 +43,7 @@ sequenceDiagram
   end
 ```
 
-- Register the `rebalance` task to be executed at the configured intervals (`t`) upon LP creation in the task registry of Automation framework (for example Gelato).
+- Register the `rebalance` task to be executed at the configured intervals (`t`) upon LP creation in the task registry of Automation framework.
 
 
 ### ChromaticLPRegistry 
